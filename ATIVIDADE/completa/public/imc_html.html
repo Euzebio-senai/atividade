@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de IMC</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-transition">
+    <!-- Header com seletores de tema e idioma -->
+    <div class="header">
+        <select class="language-selector" id="languageSelector">
+            <option value="pt">🇧🇷 PT</option>
+            <option value="en">🇺🇸 EN</option>
+            <option value="es">🇪🇸 ES</option>
+        </select>
+        
+        <div class="theme-buttons">
+            <button class="theme-selector theme-btn" data-theme="light">
+                ☀️ <span data-i18n="theme.light">Claro</span>
+            </button>
+            <button class="theme-selector theme-btn" data-theme="dark">
+                🌙 <span data-i18n="theme.dark">Escuro</span>
+            </button>
+            <button class="theme-selector theme-btn" data-theme="nature">
+                🌿 <span data-i18n="theme.nature">Natureza</span>
+            </button>
+            <button class="theme-selector theme-btn" data-theme="elegant">
+                ✨ <span data-i18n="theme.elegant">Elegante</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container gpu-accelerated">
+        <h1 data-i18n="title">🧮 Calculadora de IMC</h1>
+        
+        <form id="imcForm" class="micro-interaction">
+            <div class="form-group">
+                <label for="nome" data-i18n="form.name">👤 Nome:</label>
+                <input type="text" id="nome" name="nome" required data-i18n-placeholder="form.name.placeholder">
+            </div>
+            
+            <div class="form-group">
+                <label for="altura" data-i18n="form.height">📏 Altura (em metros):</label>
+                <input type="number" id="altura" name="altura" step="0.01" min="0.5" max="3" required data-i18n-placeholder="form.height.placeholder">
+            </div>
+            
+            <div class="form-group">
+                <label for="peso" data-i18n="form.weight">⚖️ Peso (em kg):</label>
+                <input type="number" id="peso" name="peso" step="0.1" min="10" max="500" required data-i18n-placeholder="form.weight.placeholder">
+            </div>
+            
+            <button type="submit" class="micro-interaction">
+                <span data-i18n="form.calculate">Calcular IMC</span>
+                <span class="loading-spinner" id="loadingSpinner" style="display: none;"></span>
+            </button>
+        </form>
+        
+        <div id="resultado" class="resultado"></div>
+        
+        <div class="tabela-imc micro-interaction">
+            <h3 data-i18n="table.title">📊 Tabela de Classificação IMC</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th data-i18n="table.imc">IMC</th>
+                        <th data-i18n="table.category">Categoria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-i18n="table.range1">Menos de 16</td>
+                        <td data-i18n="table.category1">Baixo peso (grau I)</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="table.range2">Entre 16 e 16,99</td>
+                        <td data-i18n="table.category2">Baixo peso (grau II)</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="table.range3">Entre 17 e 18,49</td>
+                        <td data-i18n="table.category3">Baixo peso (grau III)</td>
+                    </tr>
+                    <tr class="peso-adequado">
+                        <td data-i18n="table.range4">Entre 18,50 e 24,99</td>
+                        <td data-i18n="table.category4">Peso adequado</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="table.range5">Entre 25 e 29,99</td>
+                        <td data-i18n="table.category5">Sobrepeso</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="table.range6">Entre 30 e 34,99</td>
+                        <td data-i18n="table.category6">Obesidade (grau I)</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="table.range7">Entre 35 e 39,99</td>
+                        <td data-i18n="table.category7">Obesidade (grau II)</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="table.range8">A partir de 40</td>
+                        <td data-i18n="table.category8">Obesidade (grau III)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // ===== SISTEMA DE INTERNACIONALIZAÇÃO =====
+        const translations = {
+            pt: {
+                title: "🧮 Calculadora de IMC",
+                "theme.light": "Claro",
+                "theme.dark": "Escuro", 
+                "theme.nature": "Natureza",
+                "theme.elegant": "Elegante",
+                "form.name": "👤 Nome:",
+                "form.name.placeholder": "Digite seu nome",
+                "form.height": "📏 Altura (em metros):",
+                "form.height.placeholder": "Ex: 1.75",
+                "form.weight": "⚖️ Peso (em kg):",
+                "form.weight.placeholder": "Ex: 70.5",
+                "form.calculate": "Calcular IMC",
+                "table.title": "📊 Tabela de Classificação IMC",
+                "table.imc": "IMC",
+                "table.category": "Categoria",
+                "table.range1": "Menos de 16",
+                "table.category1": "Baixo peso (grau I)",
+                "table.range2": "Entre 16 e 16,99",
+                "table.category2": "Baixo peso (grau II)",
+                "table.range3": "Entre 17 e 18,49",
+                "table.category3": "Baixo peso (grau III)",
+                "table.range4": "Entre 18,50 e 24,99",
+                "table.category4": "Peso adequado",
+                "table.range5": "Entre 25 e 29,99",
+                "table.category5": "Sobrepeso",
+                "table.range6": "Entre 30 e 34,99",
+                "table.category6": "Obesidade (grau I)",
+                "table.range7": "Entre 35 e 39,99",
+                "table.category7": "Obesidade (grau II)",
+                "table.range8": "A partir de 40",
+                "table.category8": "Obesidade (grau III)",
+                "result.for": "✅ Resultado para",
+                "result.height": "Altura:",
+                "result.weight": "Peso:",
+                "result.imc": "IMC:",
+                "error.required": "Todos os campos são obrigatórios!",
+                "error.invalid": "Altura e peso devem ser números válidos!",
+                "error.server": "Erro ao calcular IMC. Tente novamente.",
+                "toast.theme": "Tema alterado para"
+            },
+            en: {
+                title: "🧮 BMI Calculator",
+                "theme.light": "Light",
+                "theme.dark": "Dark",
+                "theme.nature": "Nature", 
+                "theme.elegant": "Elegant",
+                "form.name": "👤 Name:",
+                "form.name.placeholder": "Enter your name",
+                "form.height": "📏 Height (in meters):",
+                "form.height.placeholder": "Ex: 1.75",
+                "form.weight": "⚖️ Weight (in kg):",
+                "form.weight.placeholder": "Ex: 70.5",
+                "form.calculate": "Calculate BMI",
+                "table.title": "📊 BMI Classification Table",
+                "table.imc": "BMI",
+                "table.category": "Category",
+                "table.range1": "Less than 16",
+                "table.category1": "Underweight (grade I)",
+                "table.range2": "Between 16 and 16.99",
+                "table.category2": "Underweight (grade II)",
+                "table.range3": "Between 17 and 18.49",
+                "table.category3": "Underweight (grade III)",
+                "table.range4": "Between 18.50 and 24.99",
+                "table.category4": "Normal weight",
+                "table.range5": "Between 25 and 29.99",
+                "table.category5": "Overweight",
+                "table.range6": "Between 30 and 34.99",
+                "table.category6": "Obesity (grade I)",
+                "table.range7": "Between 35 and 39.99",
+                "table.category7": "Obesity (grade II)",
+                "table.range8": "40 and above",
+                "table.category8": "Obesity (grade III)",
+                "result.for": "✅ Result for",
+                "result.height": "Height:",
+                "result.weight": "Weight:",
+                "result.imc": "BMI:",
+                "error.required": "All fields are required!",
+                "error.invalid": "Height and weight must be valid numbers!",
+                "error.server": "Error calculating BMI. Please try again.",
+                "toast.theme": "Theme changed to"
+            },
+            es: {
+                title: "🧮 Calculadora de IMC",
+                "theme.light": "Claro",
+                "theme.dark": "Oscuro",
+                "theme.nature": "Naturaleza",
+                "theme.elegant": "Elegante", 
+                "form.name": "👤 Nombre:",
+                "form.name.placeholder": "Ingrese su nombre",
+                "form.height": "📏 Altura (en metros):",
+                "form.height.placeholder": "Ej: 1.75",
+                "form.weight": "⚖️ Peso (en kg):",
+                "form.weight.placeholder": "Ej: 70.5",
+                "form.calculate": "Calcular IMC",
+                "table.title": "📊 Tabla de Clasificación IMC",
+                "table.imc": "IMC",
+                "table.category": "Categoría",
+                "table.range1": "Menos de 16",
+                "table.category1": "Bajo peso (grado I)",
+                "table.range2": "Entre 16 y 16,99",
+                "table.category2": "Bajo peso (grado II)",
+                "table.range3": "Entre 17 y 18,49",
+                "table.category3": "Bajo peso (grado III)",
+                "table.range4": "Entre 18,50 y 24,99",
+                "table.category4": "Peso adecuado",
+                "table.range5": "Entre 25 y 29,99",
+                "table.category5": "Sobrepeso",
+                "table.range6": "Entre 30 y 34,99",
+                "table.category6": "Obesidad (grado I)",
+                "table.range7": "Entre 35 y 39,99",
+                "table.category7": "Obesidad (grado II)",
+                "table.range8": "A partir de 40",
+                "table.category8": "Obesidad (grado III)",
+                "result.for": "✅ Resultado para",
+                "result.height": "Altura:",
+                "result.weight": "Peso:",
+                "result.imc": "IMC:",
+                "error.required": "¡Todos los campos son obligatorios!",
+                "error.invalid": "¡La altura y el peso deben ser números válidos!",
+                "error.server": "Error al calcular IMC. Inténtalo de nuevo.",
+                "toast.theme": "Tema cambiado a"
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('language') || 'pt';
+        let currentTheme = localStorage.getItem('theme') || detectSystemTheme();
+
+        // ===== DETECÇÃO DE TEMA DO SISTEMA =====
+        function detectSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            return 'light';
+        }
+
+        // ===== SISTEMA DE TOAST/NOTIFICAÇÕES =====
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        // ===== INTERNACIONALIZAÇÃO =====
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+        }
+
+        // ===== GERENCIAMENTO AVANÇADO DE TEMAS =====
+        function applyTheme(theme) {
+            const body = document.body;
+            const previousTheme = body.getAttribute('data-theme');
+            
+            // Remover tema anterior
+            if (previousTheme) {
+                body.removeAttribute('data-theme');
+            }
+            
+            // Aplicar novo tema
+            if (theme !== 'light') {
+                body.setAttribute('data-theme', theme);
+            }
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-theme') === theme) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            currentTheme = theme;
+            localStorage.setItem('theme', theme);
+            
+            // Toast notification
+            const themeName = translations[currentLanguage][`theme.${theme}`] || theme;
+            showToast(`${translations[currentLanguage]['toast.theme']} ${themeName}`);
+        }
+
+        // ===== EVENT LISTENERS =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar idioma
+            document.getElementById('languageSelector').value = currentLanguage;
+            updateLanguage(currentLanguage);
+            
+            // Inicializar tema
+            applyTheme(currentTheme);
+            
+            // Event listeners para seletor de idioma
+            document.getElementById('languageSelector').addEventListener('change', function() {
+                updateLanguage(this.value);
+            });
+            
+            // Event listeners para botões de tema
+            document.querySelectorAll('.theme-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const theme = this.getAttribute('data-theme');
+                    applyTheme(theme);
+                });
+            });
+            
+            // Detectar mudanças de tema do sistema
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                    if (!localStorage.getItem('theme')) {
+                        applyTheme(e.matches ? 'dark' : 'light');
+                    }
+                });
+            }
+        });
+
+        // ===== CALCULADORA IMC MELHORADA =====
+        document.getElementById('imcForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitButton = this.querySelector('button[type="submit"]');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const buttonText = submitButton.querySelector('span[data-i18n]');
+            
+            // Mostrar loading
+            submitButton.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            buttonText.style.opacity = '0.7';
+            
+            try {
+                const formData = new FormData(this);
+                const dados = Object.fromEntries(formData);
+                
+                // Validação client-side
+                if (!dados.nome || !dados.altura || !dados.peso) {
+                    throw new Error(translations[currentLanguage]['error.required']);
+                }
+                
+                const response = await fetch('/calcular-imc', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                
+                const resultado = await response.json();
+                const divResultado = document.getElementById('resultado');
+                
+                if (resultado.sucesso) {
+                    divResultado.innerHTML = `
+                        <h2>${translations[currentLanguage]['result.for']} ${resultado.nome}</h2>
+                        <p><strong>${translations[currentLanguage]['result.height']}</strong> ${resultado.altura}m</p>
+                        <p><strong>${translations[currentLanguage]['result.weight']}</strong> ${resultado.peso}kg</p>
+                        <p><strong>${translations[currentLanguage]['result.imc']}</strong> <span class="imc-valor">${resultado.imc}</span></p>
+                        <div class="classificacao">${resultado.classificacao}</div>
+                    `;
+                    divResultado.className = 'resultado';
+                    showToast('Cálculo realizado com sucesso!', 'success');
+                } else {
+                    divResultado.innerHTML = `
+                        <div class="erro">❌ ${resultado.erro}</div>
+                    `;
+                    showToast(resultado.erro, 'error');
+                }
+                
+                divResultado.style.display = 'block';
+                divResultado.scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                const divResultado = document.getElementById('resultado');
+                divResultado.innerHTML = `
+                    <div class="erro">❌ ${translations[currentLanguage]['error.server']}</div>
+                `;
+                divResultado.style.display = 'block';
+                showToast(error.message || translations[currentLanguage]['error.server'], 'error');
+            } finally {
+                // Remover loading
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    buttonText.style.opacity = '1';
+                }, 1000); // Delay para melhor UX
+            }
+        });
+
+        // ===== ACESSIBILIDADE E NAVEGAÇÃO POR TECLADO =====
+        document.addEventListener('keydown', function(e) {
+            // Esc para fechar resultados
+            if (e.key === 'Escape') {
+                const resultado = document.getElementById('resultado');
+                if (resultado.style.display === 'block') {
+                    resultado.style.display = 'none';
+                }
+            }
+            
+            // Alt + números para trocar temas
+            if (e.altKey) {
+                switch(e.key) {
+                    case '1': applyTheme('light'); break;
+                    case '2': applyTheme('dark'); break;
+                    case '3': applyTheme('nature'); break;
+                    case '4': applyTheme('elegant'); break;
+                }
+            }
+        });
+
+        // ===== PERFORMANCE E PWA FEATURES =====
+        // Service Worker registration (futuro)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // navigator.serviceWorker.register('/sw.js');
+            });
+        }
+
+        // Preload de recursos críticos
+        const preloadResources = () => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = 'styles.css';
+            link.as = 'style';
+            document.head.appendChild(link);
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', preloadResources);
+        } else {
+            preloadResources();
+        }
+    </script>
+
+        // Carregar tema ao carregar a página
+        document.addEventListener('DOMContentLoaded', loadTheme);
+
+        // ===== CALCULADORA IMC =====
+        document.getElementById('imcForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const dados = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/calcular-imc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dados)
+                });
+                
+                const resultado = await response.json();
+                const divResultado = document.getElementById('resultado');
+                
+                if (resultado.sucesso) {
+                    divResultado.innerHTML = `
+                        <h2>✅ Resultado para ${resultado.nome}</h2>
+                        <p><strong>Altura:</strong> ${resultado.altura}m</p>
+                        <p><strong>Peso:</strong> ${resultado.peso}kg</p>
+                        <p><strong>IMC:</strong> <span class="imc-valor">${resultado.imc}</span></p>
+                        <div class="classificacao">${resultado.classificacao}</div>
+                    `;
+                } else {
+                    divResultado.innerHTML = `
+                        <div class="erro">❌ ${resultado.erro}</div>
+                    `;
+                }
+                
+                divResultado.style.display = 'block';
+                divResultado.scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                const divResultado = document.getElementById('resultado');
+                divResultado.innerHTML = `
+                    <div class="erro">❌ Erro ao calcular IMC. Tente novamente.</div>
+                `;
+                divResultado.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
