@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela de IMC</title>
+    <!-- Inclui o Tailwind CSS via CDN para um estilo rápido e responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Define a fonte Inter como padrão -->
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white shadow-xl rounded-lg overflow-hidden w-full max-w-2xl">
+        <!-- Título da página -->
+        <div class="p-6 bg-blue-600 text-white text-center">
+            <h1 class="text-3xl font-bold">Tabela de Classificação do IMC</h1>
+        </div>
+
+        <!-- Tabela de IMC -->
+        <div class="p-6">
+            <table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-md">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            IMC
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Categoria
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Menos de 16</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Baixo peso (grau I)</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Entre 16 e 16,99</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Baixo peso (grau II)</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Entre 17 e 18,49</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Baixo peso (grau III)</td>
+                    </tr>
+                    <!-- Linha para "Peso adequado", destacada em negrito e azul -->
+                    <tr class="font-semibold text-blue-600 bg-blue-50">
+                        <td class="px-6 py-4 whitespace-nowrap">Entre 18,50 e 24,99</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Peso adequado</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Entre 25 e 29,99</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Sobrepeso</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Entre 30 e 34,99</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Obesidade (grau I)</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">Entre 35 e 39,99</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Obesidade (grau II)</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">A partir de 40</td>
+                        <td class="px-6 py-4 whitespace-nowrap">Obesidade (grau III)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
